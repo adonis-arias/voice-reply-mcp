@@ -1,0 +1,10 @@
+{
+  "name": "voice-reply",
+  "version": "0.2.0",
+  "description": "MCP + cola de voz para que Claude Code hable en tu escritorio (VPS o local), con personalidad Jarvis/TARS.",
+  "license": "MIT",
+  "private": true,
+  "bin": { "voice-reply-mcp": "mcp-server.js", "voice-reply-say": "say.js" },
+  "scripts": { "test": "node --test" },
+  "engines": { "node": ">=18" }
+}
