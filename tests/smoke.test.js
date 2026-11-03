@@ -46,6 +46,18 @@ test('MCP: initialize, tools/list y speak encolan', () => {
   assert.strictEqual(line.text, 'Hola mundo');
 });
 
+test('MCP: speak con mood valido lo encola, mood invalido falla', () => {
+  const dir = tmp();
+  const res = mcp(dir, [
+    call(1, 'speak', { text: 'Listo.', mood: 'proud' }),
+    call(2, 'speak', { text: 'Hola', mood: 'enojado' }),
+  ]);
+  assert.strictEqual(res[0].result.isError, false);
+  assert.ok(res[1].error);
+  const line = JSON.parse(fs.readFileSync(path.join(dir, 'queue.jsonl'), 'utf8').trim());
+  assert.strictEqual(line.mood, 'proud');
+});
+
 test('MCP: voice_mode y voice_persona persisten y validan', () => {
   const dir = tmp();
   mcp(dir, [call(1, 'voice_mode', { mode: 'auto' }), call(2, 'voice_persona', { style: 'jarvis', humor: 75, address: 'joven' })]);

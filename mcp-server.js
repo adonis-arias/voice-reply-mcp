@@ -5,6 +5,10 @@ const fs = require('fs');
 const path = require('path');
 const { enqueue, QUEUE } = require('./lib');
 
+// Animo de la carita (orbe) de la app mientras habla. Debe coincidir con MOODS en src/shared/types.ts de voice-reply.
+const MOODS = ['neutral', 'happy', 'excited', 'thinking', 'curious', 'sarcastic', 'surprised',
+  'sleepy', 'sad', 'worried', 'alert', 'glitch', 'proud', 'wink'];
+
 // Modo persistente entre sesiones: 'manual' (solo habla si el usuario lo pide) o 'auto' (resume cada respuesta).
 const MODE_FILE = path.join(path.dirname(QUEUE), 'mode');
 const MODES = ['manual', 'auto'];
@@ -77,12 +81,15 @@ const TOOL = {
   name: 'speak',
   description:
     'Habla en voz alta en el escritorio del usuario (app de voz). Usalo para resumenes cortos o avisos; ' +
-    'el codigo y el markdown se descartan. No lo uses para repetir la respuesta completa.',
+    'el codigo y el markdown se descartan. No lo uses para repetir la respuesta completa. ' +
+    'mood es opcional: cambia el animo de la carita del orbe mientras habla (p. ej. "thinking" al razonar, ' +
+    '"happy"/"proud" al lograr algo, "worried"/"alert" ante un error o riesgo, "sarcastic"/"wink" para la ironia TARS).',
   inputSchema: {
     type: 'object',
     properties: {
       text: { type: 'string', description: 'Texto a decir, en el idioma del usuario.' },
       interrupt: { type: 'boolean', description: 'Cortar lo que este sonando ahora (por defecto true).' },
+      mood: { type: 'string', enum: MOODS, description: 'Animo de la carita mientras habla (por defecto neutral).' },
     },
     required: ['text'],
   },
@@ -136,8 +143,9 @@ function handle(msg) {
         return reply(id, { content: [{ type: 'text', text: `Personalidad: ${JSON.stringify(now)}. ${rules()}` }] });
       }
       if (params?.name !== 'speak') return fail(id, -32602, `Herramienta desconocida: ${params?.name}`);
-      const { text, interrupt = true } = params.arguments || {};
-      const said = typeof text === 'string' ? enqueue(text, { interrupt }) : '';
+      const { text, interrupt = true, mood } = params.arguments || {};
+      if (mood !== undefined && !MOODS.includes(mood)) return fail(id, -32602, `Animo invalido: ${mood}`);
+      const said = typeof text === 'string' ? enqueue(text, mood ? { interrupt, mood } : { interrupt }) : '';
       return reply(id, {
         content: [{ type: 'text', text: said ? `Encolado para voz (${QUEUE}): ${said}` : 'Nada que decir tras limpiar el texto.' }],
         isError: !said,

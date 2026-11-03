@@ -28,7 +28,7 @@ para cualquier herramienta que escriba lineas en ella.
 
 ## Herramientas MCP
 
-- **`speak`** `{text, interrupt?}`: encola texto para decirlo. Limpia markdown, codigo, URLs y tablas; recorta a 500 caracteres en limite de frase.
+- **`speak`** `{text, interrupt?, mood?}`: encola texto para decirlo. Limpia markdown, codigo, URLs y tablas; recorta a 500 caracteres en limite de frase. `mood` (opcional) cambia el animo de la carita del orbe mientras habla: `neutral, happy, excited, thinking, curious, sarcastic, surprised, sleepy, sad, worried, alert, glitch, proud, wink`.
 - **`voice_mode`** `{mode?}`: `manual` (solo habla si se lo pides) o `auto` (habla al final de cada respuesta). Persistente.
 - **`voice_persona`** `{style?, humor?, address?}`: `style` `jarvis`|`neutral`, `humor` 0-100, `address` como llamarte. Persistente.
 
@@ -39,10 +39,11 @@ El estado vive en `~/.claude-voice/` (`queue.jsonl`, `mode`, `persona.json`). Ca
 Una linea JSON por evento:
 
 ```json
-{"t": 1793248777313, "text": "Hola, termine la tarea.", "interrupt": true}
+{"t": 1793248777313, "text": "Hola, termine la tarea.", "interrupt": true, "mood": "proud"}
 ```
 
 `interrupt` (opcional, por defecto `true`): corta lo que suena; `false` lo encola.
+`mood` (opcional, por defecto `neutral`): animo de la carita del orbe mientras habla.
 
 ## Modo A: Claude Code en un VPS
 
